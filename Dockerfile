@@ -24,11 +24,26 @@ RUN apt-get -y install elixir=1.8.0-1 > /dev/null && \
 # Installation of the inotify-tools
 RUN apt-get -y update > /dev/null && \
     apt-get install -y inotify-tools > /dev/null &&\
-    rm -rf /var/lib/apt/lists/* > /dev/null 
+    rm -rf /var/lib/apt/lists/* > /dev/null
+
+# Installation dockerize tool
+ENV DOCKERIZE_VERSION v0.5.0
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 # Create app directory and copy the Elixir projects into it
 RUN mkdir /opt/derivco
+COPY . /opt/derivco
 WORKDIR /opt/derivco
 
-# expose port 4000
+# Download the dependencies
+RUN (cd assets; npm install) && \
+    mix deps.get --force && \
+    mix compile
+
+# Expose port 4000
 EXPOSE 4000
+
+# Wait until databse service start
+CMD dockerize -wait tcp://database:3306 -timeout 1m && iex --name derivco@127.0.0.1 --cookie derivco_cookie -S mix phx.server

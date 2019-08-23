@@ -1,4 +1,8 @@
 defmodule Derivco.Database.DerivcoDatabase do
+  @moduledoc """
+    Database handler
+  """
+
   require Logger
   import Ecto.Query
   alias Derivco.Repo
@@ -7,7 +11,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   @regexp "? REGEXP ?"
 
   @doc """
-
+  Dummy test to check if the database has any value.
   """
   def dummyCheck() do
     from(m in Match)

@@ -74,7 +74,9 @@ config :derivco, Derivco.Repo,
   password: "derivco_pass",
   database: "football",
   hostname: "database",
-  pool_size: 10
+  pool_size: 10,
+  pool_timeout: :infinity,
+  timeout: :infinity
 
 config :derivco, :csv,
   file_path: "/opt/derivco/derivco_data.csv"

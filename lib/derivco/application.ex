@@ -11,9 +11,9 @@ defmodule Derivco.Application do
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
-      Derivco.Repo,
+      supervisor(Derivco.Repo, []),
       # Start the endpoint when the application starts
-      DerivcoWeb.Endpoint,
+      supervisor(DerivcoWeb.Endpoint, []),
       # Starts a worker by calling: Derivco.Worker.start_link(arg)
       worker(Derivco.Workers.DerivcoWorker, [])
     ]
@@ -25,8 +25,6 @@ defmodule Derivco.Application do
     # Run the migrations
     path = Application.app_dir(:derivco, "priv/repo/migrations")
     Ecto.Migrator.run(Derivco.Repo, path, :up, all: true)
-
-    Derivco.Workers.DerivcoWorker.populate_database()
 
     supervisor
   end

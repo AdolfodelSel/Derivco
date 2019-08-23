@@ -17,4 +17,6 @@ config :derivco, Derivco.Repo,
   username: "derivco_user",
   password: "derivco_pass",
   database: "football",
-  pool_size: 15
+  pool_size: 10,
+  pool_timeout: :infinity,
+  timeout: :infinity

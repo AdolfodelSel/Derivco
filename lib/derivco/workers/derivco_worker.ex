@@ -10,6 +10,7 @@ defmodule Derivco.Workers.DerivcoWorker do
   end
 
   def init(state) do
+    schedule(1000)
     {:ok, state}
   end
 
@@ -17,9 +18,22 @@ defmodule Derivco.Workers.DerivcoWorker do
     GenServer.cast(DerivcoWorker, {:update})
   end
 
+  def handle_info(:run, state) do
+
+    continue = populate()
+    if continue do
+      schedule(1000)
+    end
+    {:noreply, state}
+  end
+
   def handle_cast({:update}, state) do
     populate()
     {:noreply, state}
+  end
+
+  defp schedule(refresh_time) do
+    Process.send_after(self(), :run, refresh_time)
   end
 
   @doc """
@@ -27,11 +41,13 @@ defmodule Derivco.Workers.DerivcoWorker do
   """
   def populate() do
     continue = DerivcoDatabase.dummyCheck()
+    Logger.debug("populate: #{continue}")
     if continue do
       content = read_file()
       if !is_nil(content) do
+        Logger.debug("populate: csv file content #{content}")
         all_data =
-          String.split(content, "\r\n")
+          String.split(content, ~r{(\n\r|\n)})
             |> List.delete_at(0)
             |> Enum.map(fn item ->
                 splited_item = String.split(item, ",");
@@ -55,6 +71,7 @@ defmodule Derivco.Workers.DerivcoWorker do
         DerivcoDatabase.populate_database(all_data, divisions, seasons, teams)
       end
     end
+    continue
   end
 
   defp get_item_list_from_data(data, key) do
