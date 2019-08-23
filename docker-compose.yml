@@ -1,0 +1,33 @@
+version: '3'
+services:
+  app:
+    container_name: derivco
+    build: .
+    command: /bin/bash docker_start.sh
+    volumes:
+      - .:/opt/derivco
+    ports:
+      - "4000:4000"
+    links:
+      - database
+  database:
+    container_name: database
+    image: mariadb:10.1.41
+    volumes:
+      - ./mysql_volumes/datadir:/var/lib/mysql
+      - ./mysql_volumes/mysql-config:/etc/mysql/conf.d
+      - ./mysql_volumes/mysql-init-files:/docker-entrypoint-initdb.d
+    command: 
+      mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: football
+      MYSQL_USER: derivco_user
+      MYSQL_PASSWORD: derivco_pass
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10

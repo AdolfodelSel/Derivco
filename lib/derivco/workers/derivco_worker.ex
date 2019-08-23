@@ -1,0 +1,110 @@
+defmodule Derivco.Workers.DerivcoWorker do
+  use GenServer
+
+  require Logger
+  alias Derivco.Database.DerivcoDatabase
+
+
+  def start_link do
+    GenServer.start_link(__MODULE__, %{}, name: DerivcoWorker)
+  end
+
+  def init(state) do
+    {:ok, state}
+  end
+
+  def populate_database() do
+    GenServer.cast(DerivcoWorker, {:update})
+  end
+
+  def handle_cast({:update}, state) do
+    populate()
+    {:noreply, state}
+  end
+
+  @doc """
+
+  """
+  def populate() do
+    continue = DerivcoDatabase.dummyCheck()
+    if continue do
+      content = read_file()
+      if !is_nil(content) do
+        all_data =
+          String.split(content, "\r\n")
+            |> List.delete_at(0)
+            |> Enum.map(fn item ->
+                splited_item = String.split(item, ",");
+                %{
+                  div: Enum.at(splited_item, 1),
+                  season: Enum.at(splited_item, 2),
+                  date: Enum.at(splited_item, 3),
+                  home_team: Enum.at(splited_item, 4),
+                  away_team: Enum.at(splited_item, 5),
+                  fthg: Enum.at(splited_item, 6),
+                  ftag: Enum.at(splited_item, 7),
+                  ftr: Enum.at(splited_item, 8),
+                  hthg: Enum.at(splited_item, 9),
+                  htag: Enum.at(splited_item, 10),
+                  htr: Enum.at(splited_item, 11)
+                }
+              end)
+        divisions = get_item_list_from_data(all_data, :div)
+        seasons = get_item_list_from_data(all_data, :season)
+        teams = get_item_list_from_data(all_data, :home_team)
+        DerivcoDatabase.populate_database(all_data, divisions, seasons, teams)
+      end
+    end
+  end
+
+  defp get_item_list_from_data(data, key) do
+
+    {list, _acc} =
+      Enum.map_reduce(data, [], fn(map, acc) ->
+        item = map[key]
+        case key do
+          :season ->
+            aux_item = item <> map[:div]
+            if Enum.member?(acc, aux_item) do
+              {nil, acc}
+            else
+              acc = acc ++ [aux_item]
+              {%{name: item, division_id: map[:div]}, acc}
+            end
+          _ ->
+            if Enum.member?(acc, item) do
+              {nil, acc}
+            else
+              acc = acc ++ [item]
+              {%{name: item}, acc}
+            end
+        end
+      end)
+    Enum.filter(list,fn(item) -> !is_nil(item) end)
+  end
+
+  defp read_file() do
+
+    get_file_path()
+      |> File.read()
+      |> case do
+        {:ok, content} ->
+          content
+        {:error, reason} ->
+          Logger.error(fn -> "Error in read_file: #{reason}" end)
+          nil
+      end
+  end
+
+  defp get_file_path() do
+
+    get_derivco_config_map()
+    |> Map.get(:file_path, "")
+  end
+
+  defp get_derivco_config_map() do
+
+    Application.get_env(:derivco, :csv, [])
+    |> Enum.into(%{})
+  end
+end

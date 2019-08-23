@@ -1,0 +1,7 @@
+# git repository
+.git
+.gitignore
+# folder with phoenix and elixir dependencies
+deps
+# folder containing our project executable
+_build

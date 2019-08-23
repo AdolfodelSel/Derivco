@@ -1,0 +1,20 @@
+### Elixir ###
+/_build
+/cover
+/deps
+/doc
+/.fetch
+erl_crash.dump
+*.ez
+*.beam
+
+### Phoenix ###
+_build/
+/db
+/*.ez
+node_modules/
+/rel
+
+### DOCKER ###
+/mysql_volumes
+/assets/node_modules
