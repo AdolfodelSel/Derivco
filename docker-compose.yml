@@ -52,6 +52,12 @@ services:
       MYSQL_DATABASE: football
       MYSQL_USER: derivco_user
       MYSQL_PASSWORD: derivco_pass
+    volumes:
+      - ./mysql_volumes/data:/var/lib/mysql
+      - ./mysql_volumes/config:/etc/mysql/conf.d
+      - ./mysql_volumes/init:/docker-entrypoint-initdb.d
+    command: 
+      mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
     ports:
       - 3306
     networks:

@@ -66,7 +66,6 @@ defmodule Derivco.Database.DerivcoDatabase do
   def get_all_divisions(filters) do
 
     from(d in Division)
-      |> where([d], fragment(@regexp, d.name, ^filters["name"]))
       |> select([d], %{id: d.id, name: d.name})
       |> Repo.all()
   end
@@ -168,7 +167,6 @@ defmodule Derivco.Database.DerivcoDatabase do
   def get_all_seasons(filters) do
 
     from(s in Season)
-    |> where([s], fragment(@regexp, s.name, ^filters["name"]))
     |> select([s], %{id: s.id, name: s.name})
     |> Repo.all()
   end
@@ -230,7 +228,6 @@ defmodule Derivco.Database.DerivcoDatabase do
   def get_all_teams(filters) do
 
     from(t in Team)
-    |> where([t], fragment(@regexp, t.name, ^filters["name"]))
     |> select([t], %{id: t.id, name: t.name})
     |> Repo.all()
   end

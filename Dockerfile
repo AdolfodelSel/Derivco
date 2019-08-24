@@ -46,4 +46,4 @@ RUN (cd assets; npm install) && \
 EXPOSE 4000
 
 # Wait until databse service start
-CMD dockerize -wait tcp://database:3306 -timeout 1m && sleep $((10 + RANDOM % 11)) && iex --name derivco@127.0.0.1 --cookie derivco_cookie -S mix phx.server
+CMD dockerize -wait tcp://database:3306 -timeout 1m && iex --name derivco@127.0.0.1 --cookie derivco_cookie -S mix phx.server
