@@ -8,7 +8,7 @@ defmodule DerivcoWeb.TeamController do
   @protoTypes Application.get_env(:derivco, :protoTypes, []) |> Enum.into(%{})
 
   @doc """
-
+  Controller of the option to get the list of all the teams
   """
   def all(conn, params) do
 

@@ -8,7 +8,7 @@ defmodule DerivcoWeb.ListController do
   @protoTypes Application.get_env(:derivco, :protoTypes, []) |> Enum.into(%{})
 
   @doc """
-
+  Controller of the option to get the list of the divicion season pairs
   """
   def divisions_seasons(conn, params) do
 
@@ -29,7 +29,7 @@ defmodule DerivcoWeb.ListController do
   end
 
   @doc """
-
+  Controller of the option to get the list of the division team pairs
   """
   def divisions_teams(conn, params) do
 
@@ -50,7 +50,7 @@ defmodule DerivcoWeb.ListController do
   end
 
   @doc """
-
+  Controller of the option to get the list of the season team pairs
   """
   def seasons_teams(conn, params) do
 

@@ -2,7 +2,7 @@ defmodule DerivcoWeb.ErrorController do
   use DerivcoWeb, :controller
 
   @doc """
-
+  Response for bad requests
   """
   def four_oh_oh(conn, _params) do
     conn
@@ -11,7 +11,7 @@ defmodule DerivcoWeb.ErrorController do
   end
 
   @doc """
-
+  Response for unknown urls
   """
   def four_oh_four(conn, _params) do
     conn
@@ -20,7 +20,7 @@ defmodule DerivcoWeb.ErrorController do
   end
 
   @doc """
-
+  Response for internal server erros
   """
   def five_oh_oh(conn, _params) do
     conn

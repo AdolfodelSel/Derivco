@@ -8,7 +8,7 @@ defmodule DerivcoWeb.SeasonController do
   @protoTypes Application.get_env(:derivco, :protoTypes, []) |> Enum.into(%{})
 
   @doc """
-
+  Controller of the option to get the list of all the seasons
   """
   def all(conn, params) do
 
@@ -29,7 +29,7 @@ defmodule DerivcoWeb.SeasonController do
   end
 
   @doc """
-
+  Controller of the option to get the list of the division likend with the given season
   """
   def linked_divisions(conn, params) do
 
@@ -50,7 +50,7 @@ defmodule DerivcoWeb.SeasonController do
   end
 
   @doc """
-
+  Controller of the option to get the list of the matches likend with the given season
   """
   def linked_matches(conn, params) do
 

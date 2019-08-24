@@ -1,4 +1,10 @@
 defmodule Derivco.Workers.DerivcoWorker do
+  @moduledoc """
+  Used to read and parse the data from the csv.
+  It will create a new structure for the database handler for the population of the database.
+  It has a dummy check just to not try to populate the database if this one has already data.
+  """
+
   use GenServer
 
   require Logger
@@ -14,21 +20,16 @@ defmodule Derivco.Workers.DerivcoWorker do
     {:ok, state}
   end
 
-  def populate_database() do
-    GenServer.cast(DerivcoWorker, {:update})
-  end
-
   def handle_info(:run, state) do
 
-    continue = populate()
-    if continue do
-      schedule(1000)
+    try do
+      continue = populate()
+      if continue do
+        schedule(1000)
+      end
+    rescue
+      _ -> Logger.error(fn -> "Error in start: it couldn't apply migrations" end)
     end
-    {:noreply, state}
-  end
-
-  def handle_cast({:update}, state) do
-    populate()
     {:noreply, state}
   end
 
@@ -36,10 +37,7 @@ defmodule Derivco.Workers.DerivcoWorker do
     Process.send_after(self(), :run, refresh_time)
   end
 
-  @doc """
-
-  """
-  def populate() do
+  defp populate() do
     continue = DerivcoDatabase.dummyCheck()
     Logger.debug("populate: #{continue}")
     if continue do

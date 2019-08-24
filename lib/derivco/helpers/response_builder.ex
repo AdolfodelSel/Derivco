@@ -5,7 +5,7 @@ defmodule Derivco.Helpers.ResponseBuilder do
   @protoTypes Application.get_env(:derivco, :protoTypes, []) |> Enum.into(%{})
 
   @doc """
-
+  To create the response message, it could be as a json or protobuf format
   """
   def create(data, filters, protoType) do
 

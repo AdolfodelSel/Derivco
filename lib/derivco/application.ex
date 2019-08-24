@@ -3,6 +3,7 @@ defmodule Derivco.Application do
   # for more information on OTP Applications
   @moduledoc false
 
+  require Logger
   use Application
 
   def start(_type, _args) do
@@ -23,8 +24,12 @@ defmodule Derivco.Application do
     supervisor = Supervisor.start_link(children, opts)
 
     # Run the migrations
-    path = Application.app_dir(:derivco, "priv/repo/migrations")
-    Ecto.Migrator.run(Derivco.Repo, path, :up, all: true)
+    try do
+      path = Application.app_dir(:derivco, "priv/repo/migrations")
+      Ecto.Migrator.run(Derivco.Repo, path, :up, all: true)
+    rescue
+      _ -> Logger.error(fn -> "Error in start: it couldn't apply migrations" end)
+    end
 
     supervisor
   end

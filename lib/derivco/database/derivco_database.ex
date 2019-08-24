@@ -1,7 +1,4 @@
 defmodule Derivco.Database.DerivcoDatabase do
-  @moduledoc """
-    Database handler
-  """
 
   require Logger
   import Ecto.Query
@@ -26,7 +23,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of the division season pairs
   """
   def get_divisions_seasons(_filters) do
 
@@ -38,7 +35,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of the division team pairs
   """
   def get_divisions_teams(_filters) do
 
@@ -51,7 +48,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of the season team pairs
   """
   def get_seasons_teams(_filters) do
 
@@ -64,7 +61,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of all the divisions
   """
   def get_all_divisions(filters) do
 
@@ -75,7 +72,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of the seasons linked with the given division
   """
   def get_linked_seasons_with_division(filters) do
 
@@ -87,7 +84,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of the matches linked with the given division
   """
   def get_linked_matches_with_division(filters) do
 
@@ -126,7 +123,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of the matches linked with the given season division pair
   """
   def get_linked_matches_with_divion_and_season(filters) do
 
@@ -166,7 +163,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of all the seasons
   """
   def get_all_seasons(filters) do
 
@@ -177,7 +174,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of the divisions linked with the given season
   """
   def get_linked_divisions_with_season(filters) do
 
@@ -189,7 +186,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of the matches linked with the given season
   """
   def get_linked_matches_with_season(filters) do
 
@@ -228,7 +225,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of all the teams
   """
   def get_all_teams(filters) do
 
@@ -239,7 +236,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the list of all the matches
   """
   def get_all_matches(filters) do
 
@@ -277,7 +274,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  To get the information of a specific match
   """
   def get_single_match(filters) do
 
@@ -305,7 +302,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   end
 
   @doc """
-
+  Populate the database with the given information
   """
   def populate_database(all_data, divisions, seasons, teams) do
 

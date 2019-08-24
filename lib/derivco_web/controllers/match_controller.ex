@@ -8,7 +8,7 @@ defmodule DerivcoWeb.MatchController do
   @protoTypes Application.get_env(:derivco, :protoTypes, []) |> Enum.into(%{})
 
   @doc """
-
+  Controller of the option to get the list of all the matches
   """
   def all(conn, params) do
 
@@ -28,6 +28,9 @@ defmodule DerivcoWeb.MatchController do
     end
   end
 
+  @doc """
+  Controller of the option to get the information of a specific match
+  """
   def single_match(conn, params) do
 
     IO.inspect(conn)

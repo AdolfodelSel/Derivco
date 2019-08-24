@@ -3,7 +3,7 @@ defmodule Derivco.Helpers.RequestFilter do
   require Logger
 
   @doc """
-
+  To filter the request params to get only the available ones and check if are well formed
   """
   def filter_request_params(params) do
 
@@ -57,7 +57,7 @@ defmodule Derivco.Helpers.RequestFilter do
     end
   end
 
-  def check_field(key, value, max_length, is_integer) do
+  defp check_field(key, value, max_length, is_integer) do
 
     try do
       list = String.split(value, ",")
@@ -78,13 +78,12 @@ defmodule Derivco.Helpers.RequestFilter do
         nil
       end
     rescue
-      e in ArgumentError -> e
-      Logger.error(fn -> "Argument error: #{key}" end)
+      _ -> Logger.error(fn -> "Argument error: #{key}" end)
       nil
     end
   end
 
-  def path_field(value) do
+  defp path_field(value) do
 
     if !is_nil(value) do
       Enum.at(value, 0)
