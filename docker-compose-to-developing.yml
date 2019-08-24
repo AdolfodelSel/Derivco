@@ -1,0 +1,37 @@
+version: '3.4'
+
+networks:
+  derivco-network:
+    driver: overlay
+
+services:
+  derivco:
+    image: derivco
+    depends_on:
+      - database
+    build: .
+    command: iex --name derivco@127.0.0.1 --cookie derivco_cookie -S mix phx.server
+    volumes:
+      - .:/opt/derivco
+      - /opt/derivco/_build
+      - /opt/derivco/assets
+    ports:
+      - 4000:4000
+    networks:
+      - derivco-network
+
+  database:
+    image: mariadb:10.1.41
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: football
+      MYSQL_USER: derivco_user
+      MYSQL_PASSWORD: derivco_pass
+    ports:
+      - 3306
+    networks:
+      - derivco-network 
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10

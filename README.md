@@ -5,21 +5,52 @@
   * Install Docker: https://docs.docker.com/install/
   * Install Docker-compose: https://docs.docker.com/compose/install/
 
-## Run
+## Technologies
 
-  * Download the code `git clone https://github.com/AdolfodelSel/Derivco.git`
-  * Go to Derivco folder `cd Derivco`
-  * Here you have two options:
-    1. Run `docker-compose pull` and you will download the needed images.
-    2. Run `docker-compose build` and `docker pull dockercloud/haproxy` and `mariadb:10.1.41`
-  * Create the docker swarm `docker swarm init`
-  * Maybe you will have to change the volme path of the proxy service:
-    - Windows: //var/run/docker.sock:/var/run/docker.sock
-    - Linux: /var/run/docker.sock:/var/run/docker.sock
-  * Create the stack `docker stack deploy -c docker-compose.yml derivco`
+  * GitHub to store the proyect:
+    https://github.com/AdolfodelSel/Derivco
 
-Now you can visit [`localhost`](http://localhost) from your browser.
+  * DockerHub to store the proyect container:
+    https://hub.docker.com/r/adolfodelsel/derivco
 
-## API
+  * PostMan to make API tests and his documentation:
+    https://documenter.getpostman.com/view/6788500/SVfJWCbR
 
-  * Visit my postman workspace: https://documenter.getpostman.com/view/6788500/SVfJWCbR
+## Install
+
+  * Download the code :
+  `git clone https://github.com/AdolfodelSel/Derivco.git`
+  * Go to Derivco folder:
+  `cd Derivco`
+  * Download the images:
+  `docker-compose pull`
+
+  Alternatively you can build your own image instead of download it. It is up to you,
+  but i recommend to download it.
+    - `docker-compose build`
+    - `docker pull dockercloud/haproxy`
+    - `mariadb:10.1.41`
+
+## Docker
+
+  * If you never used docker swarm you have to initialize it:
+  `docker swarm init`
+  * Create the new stack with the docker-compose file:
+  `docker stack deploy -c docker-compose.yml derivco`
+
+  The deployment should be quicker but let it some seconds, 
+  you can check if all the services are ready with the command: `docker service ls`
+
+  Please check the proxy section on the `docker-compose.yml` file, just to be sure 
+  that the url to the `docker.sock` it is same as in you pc.
+  It is very important because if is wrong the proxy will not work.
+
+  Default routes:
+    - Windows Subsystem for Linux:
+    `//var/run/docker.sock:/var/run/docker.sock`
+    - Linux: 
+    `/var/run/docker.sock:/var/run/docker.sock`
+
+## Browser
+
+  * Now you can visit [`localhost`](http://localhost) from your browser.

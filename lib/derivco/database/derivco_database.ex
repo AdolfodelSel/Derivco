@@ -11,7 +11,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   Dummy test to check if the database has any value.
   """
   def dummyCheck() do
-    from(m in Match)
+    from(m in Division)
     |> limit(1)
     |> Repo.one()
     |> case do
@@ -306,102 +306,123 @@ defmodule Derivco.Database.DerivcoDatabase do
   """
   def populate_database(all_data, divisions, seasons, teams) do
 
-    inserted_divisions = insert_items(divisions, Division)
-    inserted_seasons = insert_items(seasons, Season)
-
-    aux_division_season =
-      Enum.map(seasons, fn season ->
-        index = Enum.find_index(inserted_divisions, fn(x) -> x[:name] == season[:division_id] end)
-        if !is_nil(index) do
-          division_id = Enum.at(inserted_divisions, index)[:id]
-          Map.replace!(season, :division_id, division_id)
-        else
-          season
-        end
-      end)
-      |> Enum.map(fn aux_season ->
-          index = Enum.find_index(inserted_seasons, fn(x) -> x[:name] == aux_season[:name] end)
-          if !is_nil(index) do
-            season_id = Enum.at(inserted_seasons, index)[:id]
-            Map.put(aux_season, :season_id, season_id)
-            |> Map.delete(:name)
+    {inserted_divisions, inserted_divisions_status} = insert_items(divisions, Division)
+    if inserted_divisions_status do
+      {inserted_seasons, inserted_seasons_status} = insert_items(seasons, Season)
+      if inserted_seasons_status do
+        aux_division_season =
+          Enum.map(seasons, fn season ->
+            index = Enum.find_index(inserted_divisions, fn(x) -> x[:name] == season[:division_id] end)
+            if !is_nil(index) do
+              division_id = Enum.at(inserted_divisions, index)[:id]
+              Map.replace!(season, :division_id, division_id)
+            else
+              season
+            end
+          end)
+          |> Enum.map(fn aux_season ->
+              index = Enum.find_index(inserted_seasons, fn(x) -> x[:name] == aux_season[:name] end)
+              if !is_nil(index) do
+                season_id = Enum.at(inserted_seasons, index)[:id]
+                Map.put(aux_season, :season_id, season_id)
+                |> Map.delete(:name)
+              else
+                aux_season
+              end
+            end)
+        {inserted_division_season, inserted_division_season_status} = insert_items(aux_division_season, DivisionSeason)
+        if inserted_division_season_status do
+          {inserted_teams, inserted_teams_status} = insert_items(teams, Team)
+          if inserted_teams_status do
+            aux_matches =
+              Enum.map(all_data, fn match ->
+                index_division = Enum.find_index(inserted_divisions, fn(x) -> x[:name] == match[:div] end)
+                index_season = Enum.find_index(inserted_seasons, fn(x) -> x[:name] == match[:season] end)
+                index_home_team = Enum.find_index(inserted_teams, fn(x) -> x[:name] == match[:home_team] end)
+                index_away_team = Enum.find_index(inserted_teams, fn(x) -> x[:name] == match[:away_team] end)
+                if !is_nil(index_season) && !is_nil(index_home_team) && !is_nil(index_away_team) && !is_nil(index_division) do
+                  division_id = Enum.at(inserted_divisions, index_division)[:id]
+                  season_id = Enum.at(inserted_seasons, index_season)[:id]
+                  home_team_id = Enum.at(inserted_teams, index_home_team)[:id]
+                  away_team_id = Enum.at(inserted_teams, index_away_team)[:id]
+                  %{
+                    date: match[:date],
+                    home_team_id: home_team_id,
+                    away_team_id: away_team_id,
+                    fthg: match[:fthg],
+                    ftag: match[:ftag],
+                    ftr: match[:ftr],
+                    hthg: match[:hthg],
+                    htag: match[:htag],
+                    htr: match[:htr],
+                    season_id: season_id,
+                    division_id: division_id
+                  }
+                else
+                  match
+                end
+              end)
+            {inserted_matches, inserted_matches_status} = insert_items(aux_matches, Match)
+            inserted_matches_status
           else
-            aux_season
+            false
           end
-        end)
-    inserted_division_season = insert_items(aux_division_season, DivisionSeason)
-
-    inserted_teams = insert_items(teams, Team)
-    aux_matches =
-      Enum.map(all_data, fn match ->
-        index_division = Enum.find_index(inserted_divisions, fn(x) -> x[:name] == match[:div] end)
-        index_season = Enum.find_index(inserted_seasons, fn(x) -> x[:name] == match[:season] end)
-        index_home_team = Enum.find_index(inserted_teams, fn(x) -> x[:name] == match[:home_team] end)
-        index_away_team = Enum.find_index(inserted_teams, fn(x) -> x[:name] == match[:away_team] end)
-        if !is_nil(index_season) && !is_nil(index_home_team) && !is_nil(index_away_team) && !is_nil(index_division) do
-          division_id = Enum.at(inserted_divisions, index_division)[:id]
-          season_id = Enum.at(inserted_seasons, index_season)[:id]
-          home_team_id = Enum.at(inserted_teams, index_home_team)[:id]
-          away_team_id = Enum.at(inserted_teams, index_away_team)[:id]
-          %{
-            date: match[:date],
-            home_team_id: home_team_id,
-            away_team_id: away_team_id,
-            fthg: match[:fthg],
-            ftag: match[:ftag],
-            ftr: match[:ftr],
-            hthg: match[:hthg],
-            htag: match[:htag],
-            htr: match[:htr],
-            season_id: season_id,
-            division_id: division_id
-          }
         else
-          match
+          false
         end
-      end)
-    inserted_matches = insert_items(aux_matches, Match)
-
-    %{inserted_divisions: inserted_divisions, inserted_seasons: inserted_seasons, inserted_division_season: inserted_division_season, inserted_teams: inserted_teams, inserted_matches: inserted_matches}
+      else
+        false
+      end
+    else
+      false
+    end
   end
 
   defp insert_items(items, model) do
-    {inserted_items, _acc} =
-      Enum.map_reduce(items, 0, fn(map, acc) ->
-        data =
-          case model do
-            Match ->
-              from(m in Match, where: m.home_team_id == ^map[:home_team_id] and m.away_team_id == ^map[:away_team_id] and m.season_id == ^map[:season_id])
-              |> Repo.one
-            DivisionSeason ->
-              from(ds in DivisionSeason, where: ds.season_id == ^map[:season_id] and ds.division_id == ^map[:division_id])
-              |> Repo.one
-            _ ->
-              Repo.get_by(model, name: map[:name])
+    Repo.transaction(fn ->
+      {inserted_items, _acc} =
+        Enum.map_reduce(items, 0, fn(map, acc) ->
+          data =
+            case model do
+              Match ->
+                from(m in Match, where: m.home_team_id == ^map[:home_team_id] and m.away_team_id == ^map[:away_team_id] and m.season_id == ^map[:season_id])
+                |> Repo.one
+              DivisionSeason ->
+                from(ds in DivisionSeason, where: ds.season_id == ^map[:season_id] and ds.division_id == ^map[:division_id])
+                |> Repo.one
+              _ ->
+                Repo.get_by(model, name: map[:name])
+            end
+          case data do
+            nil ->
+              model.changeset(model.get_empty_map(), map)
+              |> Repo.insert()
+              |> case do
+                  {:ok, result} ->
+                    {Map.merge(map, %{id: result.id}), acc}
+                  {:error, _changeset} ->
+                    Logger.error(fn -> "Error in populate_database: couldnt insert #{map[:name]}" end)
+                    {nil, acc}
+                end
+            %Division{id: division_id} ->
+              {Map.merge(map, %{id: division_id}), acc}
+            %Season{id: season_id} ->
+              {Map.merge(map, %{id: season_id}), acc}
+            %Team{id: team_id} ->
+              {Map.merge(map, %{id: team_id}), acc}
+            %Match{id: match_id} ->
+              {Map.merge(map, %{id: match_id}), acc}
+            %DivisionSeason{id: division_seasons_id} ->
+              {Map.merge(map, %{id: division_seasons_id}), acc}
           end
-        case data do
-          nil ->
-            model.changeset(model.get_empty_map(), map)
-            |> Repo.insert()
-            |> case do
-                {:ok, result} ->
-                  {Map.merge(map, %{id: result.id}), acc}
-                {:error, _changeset} ->
-                  Logger.error(fn -> "Error in populate_database: couldnt insert #{map[:name]}" end)
-                  {nil, acc}
-              end
-          %Division{id: division_id} ->
-            {Map.merge(map, %{id: division_id}), acc}
-          %Season{id: season_id} ->
-            {Map.merge(map, %{id: season_id}), acc}
-          %Team{id: team_id} ->
-            {Map.merge(map, %{id: team_id}), acc}
-          %Match{id: match_id} ->
-            {Map.merge(map, %{id: match_id}), acc}
-          %DivisionSeason{id: division_seasons_id} ->
-            {Map.merge(map, %{id: division_seasons_id}), acc}
-        end
-      end)
+        end)
       inserted_items
+      end)
+      |> case do
+        {:ok, inserted_items} ->
+          {inserted_items, true}
+        {:error, error} ->
+          {"", false}
+      end
   end
 end

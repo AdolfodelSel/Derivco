@@ -66,9 +66,14 @@ defmodule Derivco.Workers.DerivcoWorker do
         divisions = get_item_list_from_data(all_data, :div)
         seasons = get_item_list_from_data(all_data, :season)
         teams = get_item_list_from_data(all_data, :home_team)
-        DerivcoDatabase.populate_database(all_data, divisions, seasons, teams)
+        status = DerivcoDatabase.populate_database(all_data, divisions, seasons, teams)
+        Logger.debug("populate: the population of the database was #{status}")
+        #If we had some error on the transaction we will try again
+        !status
+      else
+        true
       end
-    end
+   end
     continue
   end
 
