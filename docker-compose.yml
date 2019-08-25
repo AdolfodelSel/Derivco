@@ -53,7 +53,7 @@ services:
       MYSQL_PASSWORD: derivco_pass
     volumes:
       - ./mysql_volumes/data:/var/lib/mysql
-      - ./mysql_volumes/config:/etc/mysql/conf.d
+      - ./mysql_volumes/config/my.cnf:/etc/mysql/my.cnf
       - ./mysql_volumes/init:/docker-entrypoint-initdb.d
     command: 
       mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
