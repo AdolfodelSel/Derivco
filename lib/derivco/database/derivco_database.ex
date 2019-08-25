@@ -327,7 +327,7 @@ defmodule Derivco.Database.DerivcoDatabase do
                 aux_season
               end
             end)
-        {inserted_division_season, inserted_division_season_status} = insert_items(aux_division_season, DivisionSeason)
+        {_inserted_division_season, inserted_division_season_status} = insert_items(aux_division_season, DivisionSeason)
         if inserted_division_season_status do
           {inserted_teams, inserted_teams_status} = insert_items(teams, Team)
           if inserted_teams_status do
@@ -372,6 +372,86 @@ defmodule Derivco.Database.DerivcoDatabase do
       end
     else
       false
+    end
+  end
+
+  @doc """
+  To store an specific division on the database, it is using on testing
+  """
+  def set_division(data) do
+
+    Division.changeset(%Division{}, data)
+    |> Repo.insert()
+    |> case do
+      {:ok, result} ->
+        {true, result}
+      {:error, changeset} ->
+        Logger.error(fn -> "Error in set_division: couldnt insert #{data[:name]}" end)
+        {false, changeset}
+    end
+  end
+
+  @doc """
+  To store an specific season on the database, it is using on testing
+  """
+  def set_season(data) do
+
+    Season.changeset(%Season{}, data)
+    |> Repo.insert()
+    |> case do
+      {:ok, result} ->
+        {true, result}
+      {:error, changeset} ->
+        Logger.error(fn -> "Error in set_season: couldnt insert #{data[:name]}" end)
+        {false, changeset}
+    end
+  end
+
+  @doc """
+  To store an specific division season pair on the database, it is using on testing
+  """
+  def set_division_season(data) do
+
+    DivisionSeason.changeset(%DivisionSeason{}, data)
+    |> Repo.insert()
+    |> case do
+      {:ok, result} ->
+        {true, result}
+      {:error, changeset} ->
+        Logger.error(fn -> "Error in set_division_season" end)
+        {false, changeset}
+    end
+  end
+
+  @doc """
+  To store an specific match on the database, it is using on testing
+  """
+  def set_match(data) do
+
+    Match.changeset(%Match{}, data)
+    |> Repo.insert()
+    |> case do
+      {:ok, result} ->
+        {true, result}
+      {:error, changeset} ->
+        Logger.error(fn -> "Error in set_match: couldnt insert #{data[:name]}" end)
+        {false, changeset}
+    end
+  end
+
+  @doc """
+  To store an specific team on the database, it is using on testing
+  """
+  def set_team(data) do
+
+    Team.changeset(%Team{}, data)
+    |> Repo.insert()
+    |> case do
+      {:ok, result} ->
+        {true, result}
+      {:error, changeset} ->
+        Logger.error(fn -> "Error in set_team: couldnt insert #{data[:name]}" end)
+        {false, changeset}
     end
   end
 

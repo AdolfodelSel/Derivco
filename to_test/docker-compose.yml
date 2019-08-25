@@ -6,15 +6,15 @@ networks:
 
 services:
   derivco:
-    image: derivco
+    image: adolfodelsel/derivco
+    build: ../.
     depends_on:
       - database
-    build: .
-    command: iex --name derivco@127.0.0.1 --cookie derivco_cookie -S mix phx.server
-    volumes:
-      - .:/opt/derivco
-      - /opt/derivco/_build
-      - /opt/derivco/assets
+    command: /bin/bash to_test/docker-test.sh
+    #volumes:
+      #- ../:/opt/derivco
+      #- /opt/derivco/_build
+      #- /opt/derivco/assets
     ports:
       - 4000:4000
     networks:
@@ -28,7 +28,7 @@ services:
       MYSQL_USER: derivco_user
       MYSQL_PASSWORD: derivco_pass
     ports:
-      - 3306
+      - 3306:3306
     networks:
       - derivco-network 
     healthcheck:

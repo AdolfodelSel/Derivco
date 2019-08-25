@@ -20,6 +20,18 @@ defmodule Derivco.Workers.DerivcoWorker do
     {:ok, state}
   end
 
+  #############################################
+  ### External
+  #############################################
+
+  def call_to_populate() do
+    GenServer.cast(DerivcoWorker, {:populate})
+  end
+
+  #############################################
+  ### Internal API
+  #############################################
+
   def handle_info(:run, state) do
 
     try do
@@ -33,6 +45,14 @@ defmodule Derivco.Workers.DerivcoWorker do
     {:noreply, state}
   end
 
+  def handle_cast({:populate}, _state) do
+    populate()
+  end
+
+  #############################################
+  ### Internal
+  #############################################
+
   defp schedule(refresh_time) do
     Process.send_after(self(), :run, refresh_time)
   end
@@ -45,7 +65,7 @@ defmodule Derivco.Workers.DerivcoWorker do
       if !is_nil(content) do
         Logger.debug("populate: csv file content #{content}")
         all_data =
-          String.split(content, ~r{(\n\r|\n)})
+          String.split(content, ~r{(\n\r|\r\n|\n)})
             |> List.delete_at(0)
             |> Enum.map(fn item ->
                 splited_item = String.split(item, ",");

@@ -53,35 +53,48 @@ Download the images
 docker-compose pull
 ```
 
-Alternatively you can build your own image instead of download it.
-It is up to you, but i recommend to use the pull command.
-
-  Build the image from the downloaded code
-
-  ```  
-  $ docker-compose build
-  ```
-
-  Download haproxy and mariadb image
-
-  ```
-  $ docker pull dockercloud/haproxy
-  $ docker pull mariadb:10.1.41
-  ```
-
 ## Running the tests
 
-  Aun faltan
+You have two options to run the tests.
 
-### Break down into end to end tests
-
-Explain what these tests test and why
+If you have mix installed you can run it directly,
+but first you have to launch the database container.
 
 ```
-Give an example
+$ cd to_test
+$ docker-compose up -d database
+```
+
+Then go back and run the mix command
+
+```
+$ cd ..
+$ DB_IP="localhost" mix test
+```
+
+If you dont have mix installed you can run these tests directly in a container
+
+```
+$ cd to_test
+$ docker-compose up
+```
+
+I launched all my servers with the remsh tool, so you can connect then easily with the command
+
+```
+$ docker exec -it <CONTAINER ID> iex --name debug@127.0.0.1 --cookie "derivco_cookie" --remsh derivco@127.0.0.1
 ```
 
 ## Deployment
+
+Before start the deployment, check the proxy section in the `docker-compose.yml` file,
+just to be sure that the url to the `docker.sock` it is the same as in you pc.
+It is very important because if is wrong the proxy will not work.
+
+Examples of default routes:
+
+  * Ubuntu (Windows Subsystem): `//var/run/docker.sock:/var/run/docker.sock`
+  * Linux: `/var/run/docker.sock:/var/run/docker.sock`
 
 If you never used docker swarm you have to initialize it
 
@@ -95,22 +108,12 @@ Create the new stack with the docker-compose file
 $ docker stack deploy -c docker-compose.yml derivco
 ```
 
-The deployment should be quicker but let it some seconds(~50s)
-
-Now you can make the API requests
-
-Please check the proxy section in the `docker-compose.yml` file, just to be sure 
-that the url to the `docker.sock` it is same as in you pc.
-It is very important because if is wrong the proxy will not work.
-
-Examples of default routes:
-
-  * Windows Subsystem for Linux: `//var/run/docker.sock:/var/run/docker.sock`
-  * Linux: `/var/run/docker.sock:/var/run/docker.sock`
+The deployment should be quicker but let it some seconds (~50s)
 
 ## API
 
-Here you have a link to my public Postman workspace, if you click it you will find the API documentation and also with some test results.
+Here you have a link to my public Postman workspace, there you will find the API documentation
+and also some test results.
 
 https://documenter.getpostman.com/view/6788500/SVfJWCbR
 

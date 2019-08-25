@@ -7,7 +7,6 @@ networks:
 services:
   derivco:
     image: adolfodelsel/derivco
-    build: .
     depends_on:
       - database
     ports:

@@ -15,5 +15,5 @@ config :derivco, Derivco.Repo,
   username: "derivco_user",
   password: "derivco_pass",
   database: "football",
-  hostname: "localhost",
+  hostname: System.get_env("DB_IP"),
   pool: Ecto.Adapters.SQL.Sandbox

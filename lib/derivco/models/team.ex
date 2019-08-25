@@ -4,7 +4,8 @@ defmodule Derivco.Models.Team do
 
   schema "teams" do
     field :name, :string
-    has_many :matchs, Derivco.Models.Match
+    has_many :matchs_home, Derivco.Models.Match, foreign_key: :home_team_id
+    has_many :matchs_away, Derivco.Models.Match, foreign_key: :away_team_id
     timestamps()
   end
 

@@ -33,7 +33,6 @@ defmodule DerivcoWeb.MatchController do
   """
   def single_match(conn, params) do
 
-    IO.inspect(conn)
     filters = RequestFilter.filter_request_params(params)
     if filters["status"] do
       {status, type, response} =
