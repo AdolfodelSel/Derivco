@@ -63,7 +63,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   @doc """
   To get the list of all the divisions
   """
-  def get_all_divisions(filters) do
+  def get_all_divisions(_filters) do
 
     from(d in Division)
       |> select([d], %{id: d.id, name: d.name})
@@ -164,7 +164,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   @doc """
   To get the list of all the seasons
   """
-  def get_all_seasons(filters) do
+  def get_all_seasons(_filters) do
 
     from(s in Season)
     |> select([s], %{id: s.id, name: s.name})
@@ -225,7 +225,7 @@ defmodule Derivco.Database.DerivcoDatabase do
   @doc """
   To get the list of all the teams
   """
-  def get_all_teams(filters) do
+  def get_all_teams(_filters) do
 
     from(t in Team)
     |> select([t], %{id: t.id, name: t.name})
@@ -359,7 +359,7 @@ defmodule Derivco.Database.DerivcoDatabase do
                   match
                 end
               end)
-            {inserted_matches, inserted_matches_status} = insert_items(aux_matches, Match)
+            {_inserted_matches, inserted_matches_status} = insert_items(aux_matches, Match)
             inserted_matches_status
           else
             false
@@ -418,7 +418,7 @@ defmodule Derivco.Database.DerivcoDatabase do
       |> case do
         {:ok, inserted_items} ->
           {inserted_items, true}
-        {:error, error} ->
+        {:error, _error} ->
           {"", false}
       end
   end
