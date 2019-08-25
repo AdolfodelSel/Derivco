@@ -52,7 +52,6 @@ services:
       MYSQL_USER: derivco_user
       MYSQL_PASSWORD: derivco_pass
     volumes:
-      - ./mysql_volumes/data:/var/lib/mysql
       - ./mysql_volumes/config/my.cnf:/etc/mysql/my.cnf
       - ./mysql_volumes/init:/docker-entrypoint-initdb.d
     command: 
