@@ -1,10 +1,11 @@
 defmodule DerivcoWeb.SeasonControllerTest do
   use DerivcoWeb.ConnCase
   alias Derivco.Database.DerivcoDatabase
+  alias Derivco.Messages.ResponseMessage
 
   describe "get all seasons" do
 
-    test "success request", %{conn: conn} do
+    test "success request json", %{conn: conn} do
 
       {_status, season} = DerivcoDatabase.set_season(%{name: "201617"})
 
@@ -16,6 +17,22 @@ defmodule DerivcoWeb.SeasonControllerTest do
       expected =[%{"name" => season.name, "id" => season.id}]
 
       assert response == expected
+    end
+
+    test "success request proto", %{conn: conn} do
+
+      {_status, season} = DerivcoDatabase.set_season(%{name: "201617"})
+
+      response =
+        conn
+        |> get(Routes.season_path(conn, :all, [format: "protobuf"]))
+        |> response(200)
+        |> ResponseMessage.Response.decode()
+
+      %Derivco.Messages.ResponseMessage.Response{seasons: [seasons]} = response
+      expected = %Derivco.Messages.ResponseMessage.Seasons{id: season.id, name: season.name}
+
+      assert seasons == expected
     end
 
     test "empty response", %{conn: conn} do
@@ -78,7 +95,7 @@ defmodule DerivcoWeb.SeasonControllerTest do
 
   describe "get linked matches" do
 
-    test "success request", %{conn: conn} do
+    test "success request json", %{conn: conn} do
 
       {_status, division} = DerivcoDatabase.set_division(%{name: "SP1"})
       {_status, season} = DerivcoDatabase.set_season(%{name: "201617"})
@@ -121,6 +138,53 @@ defmodule DerivcoWeb.SeasonControllerTest do
       }]
 
       assert response == expected
+    end
+
+    test "success request proto", %{conn: conn} do
+
+      {_status, division} = DerivcoDatabase.set_division(%{name: "SP1"})
+      {_status, season} = DerivcoDatabase.set_season(%{name: "201617"})
+      {_status, team1} = DerivcoDatabase.set_team(%{name: "La Coruna"})
+      {_status, team2} = DerivcoDatabase.set_team(%{name: "Eibar"})
+      {_status, match} =
+        DerivcoDatabase.set_match(
+          %{
+            date: "19/08/2016",
+            home_team_id: team1.id,
+            away_team_id: team2.id,
+            fthg: 0,
+            ftag: 0,
+            ftr: "H",
+            hthg: 0,
+            htag: 0,
+            htr: "D",
+            season_id: season.id,
+            division_id: division.id
+          })
+
+      response =
+        conn
+        |> get(Routes.season_path(conn, :linked_matches, season.id, [format: "protobuf"]))
+        |> response(200)
+        |> ResponseMessage.Response.decode()
+
+      %Derivco.Messages.ResponseMessage.Response{matches: [matches]} = response
+      expected = %Derivco.Messages.ResponseMessage.Matches{
+        id: match.id,
+        date: "19/08/2016",
+        home_team: team1.name,
+        away_team: team2.name,
+        fthg: 0,
+        ftag: 0,
+        ftr: "H",
+        hthg: 0,
+        htag: 0,
+        htr: "D",
+        season: season.name,
+        division: division.name
+      }
+
+      assert matches == expected
     end
 
     test "success request with params", %{conn: conn} do

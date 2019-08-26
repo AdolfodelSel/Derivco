@@ -17,3 +17,12 @@ config :derivco, Derivco.Repo,
   database: "football",
   hostname: System.get_env("DB_IP"),
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :derivco, :protoTypes,
+  divisions_seasons: "divisions_seasons",
+  divisions_teams: "divisions_teams",
+  seasons_teams: "seasons_teams",
+  divisions: "divisions",
+  seasons: "seasons",
+  teams: "teams",
+  matches: "matches"

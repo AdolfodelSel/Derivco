@@ -50,7 +50,13 @@ cd Derivco
 Download the images
 
 ```
-docker-compose pull
+$ sudo docker-compose pull
+```
+
+If you never used docker swarm you have to initialize it
+
+```
+$ sudo docker swarm init
 ```
 
 ## Running the tests
@@ -62,27 +68,27 @@ but first you have to launch the database container.
 
 ```
 $ cd to_test
-$ docker-compose up -d database
+$ sudo docker-compose up -d database
 ```
 
 Then go back and run the mix command
 
 ```
 $ cd ..
-$ DB_IP="localhost" mix test
+$ sudo DB_IP="localhost" mix test
 ```
 
 If you dont have mix installed you can run these tests directly in a container
 
 ```
 $ cd to_test
-$ docker-compose up
+$ sudo docker-compose up
 ```
 
 I launched all my servers with the remsh tool, so you can connect then easily with the command
 
 ```
-$ docker exec -it <CONTAINER ID> iex --name debug@127.0.0.1 --cookie "derivco_cookie" --remsh derivco@127.0.0.1
+$ sudo docker exec -it <CONTAINER ID> iex --name debug@127.0.0.1 --cookie "derivco_cookie" --remsh derivco@127.0.0.1
 ```
 
 ## Deployment
@@ -96,16 +102,10 @@ Examples of default routes:
   * Ubuntu (Windows Subsystem): `//var/run/docker.sock:/var/run/docker.sock`
   * Linux: `/var/run/docker.sock:/var/run/docker.sock`
 
-If you never used docker swarm you have to initialize it
-
-```
-$ docker swarm init
-```
-
 Create the new stack with the docker-compose file
 
 ```
-$ docker stack deploy -c docker-compose.yml derivco
+$ sudo docker stack deploy -c docker-compose.yml derivco
 ```
 
 The deployment should be quicker but let it some seconds (~50s)
